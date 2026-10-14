@@ -1,0 +1,753 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusDesk | Student Management</title>
+
+<style>
+:root {
+  --navy: #101c35;
+  --navy-light: #1c2b47;
+  --teal: #20c7b7;
+  --teal-dark: #0e9388;
+  --bg: #f3f6fa;
+  --white: #ffffff;
+  --text: #17243b;
+  --muted: #68778e;
+  --border: #e0e7ef;
+  --red: #dc4444;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button, input { font: inherit; }
+button { cursor: pointer; }
+
+.topbar {
+  background: var(--navy);
+  color: white;
+  padding: 24px 5%;
+}
+
+.topbar-inner {
+  max-width: 1180px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: var(--teal);
+  color: var(--navy);
+  font-size: 29px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 25px;
+  letter-spacing: -.5px;
+}
+
+.brand p {
+  margin: 5px 0 0;
+  color: #b8c7dd;
+  font-size: 13px;
+}
+
+.status {
+  padding: 9px 13px;
+  border: 1px solid #40516b;
+  border-radius: 30px;
+  color: #c9f9ef;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.status span {
+  color: var(--teal);
+  margin-right: 5px;
+}
+
+main {
+  width: min(1120px, 90%);
+  margin: 42px auto 65px;
+}
+
+.eyebrow {
+  color: var(--teal-dark);
+  font-weight: 750;
+  letter-spacing: 2px;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.welcome {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.welcome h2 {
+  margin: 12px 0;
+  color: var(--navy);
+  font-size: clamp(28px, 4vw, 38px);
+  letter-spacing: -1px;
+}
+
+.welcome p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 27px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: 275px;
+  box-shadow: 0 7px 24px rgba(16, 28, 53, .035);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 32px rgba(16, 28, 53, .09);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.card-icon {
+  height: 55px;
+  width: 55px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  font-size: 25px;
+}
+
+.icon-create { background: #d9faf4; }
+.icon-read { background: #e0f2fe; }
+.icon-manage { background: #fff0d9; }
+
+.card-number {
+  color: #a3afc0;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.card h3 {
+  margin: 0 0 10px;
+  color: var(--navy);
+  font-size: 21px;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0 0 24px;
+  flex: 1;
+}
+
+.card-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: white;
+  color: var(--navy);
+  font-weight: 700;
+  text-align: left;
+  transition: .2s;
+}
+
+.card-button .arrow {
+  color: var(--teal-dark);
+  font-size: 20px;
+}
+
+.card-button:hover {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: white;
+}
+
+.panel {
+  display: none;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(22px, 4vw, 38px);
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 12px 38px rgba(16, 28, 53, .06);
+}
+
+.panel.active {
+  display: block;
+  animation: appear .2s ease;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel-heading {
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 25px;
+}
+
+.panel-heading .eyebrow { margin-bottom: 10px; }
+
+.panel-heading h2 {
+  margin: 0 0 9px;
+  color: var(--navy);
+  font-size: 28px;
+}
+
+.panel-heading p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.field { margin: 19px 0; }
+
+.field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 750;
+  color: var(--navy);
+}
+
+.field input {
+  width: 100%;
+  padding: 14px 15px;
+  border: 1px solid #ccd6e2;
+  border-radius: 10px;
+  outline: none;
+  color: var(--text);
+  background: #fff;
+}
+
+.field input:focus {
+  border-color: var(--teal-dark);
+  box-shadow: 0 0 0 3px rgba(32, 199, 183, .14);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px;
+  margin-top: 25px;
+}
+
+.primary, .secondary, .danger {
+  border: 0;
+  border-radius: 10px;
+  padding: 13px 18px;
+  font-weight: 700;
+}
+
+.primary {
+  color: var(--navy);
+  background: var(--teal);
+}
+
+.primary:hover { background: #69dfd1; }
+
+.secondary {
+  color: var(--navy);
+  background: #edf2f7;
+}
+
+.secondary:hover { background: #e0e7ef; }
+
+.danger {
+  color: white;
+  background: var(--red);
+}
+
+.danger:hover { background: #b92d2d; }
+
+.message {
+  display: none;
+  padding: 13px 15px;
+  border-radius: 10px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  margin: 18px 0;
+}
+
+.message.show { display: block; }
+.message.success { background: #dcfce7; color: #166534; }
+.message.error { background: #fee2e2; color: #991b1b; }
+
+.result {
+  display: none;
+  margin-top: 22px;
+  padding: 21px;
+  background: #f7fafc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+
+.result.show { display: block; }
+.result h3 { margin-top: 0; color: var(--navy); }
+.result p { line-height: 1.6; }
+
+footer {
+  text-align: center;
+  padding: 22px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+
+[hidden] { display: none !important; }
+
+@media (max-width: 800px) {
+  .cards { grid-template-columns: 1fr; max-width: 500px; margin: auto; }
+  .card { min-height: 245px; }
+  .topbar-inner { align-items: flex-start; }
+  .status { display: none; }
+  main { margin-top: 30px; }
+}
+
+@media (max-width: 480px) {
+  .brand h1 { font-size: 20px; }
+  .brand-icon { width: 44px; height: 44px; }
+  .actions button { width: 100%; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-icon">⌂</div>
+      <div>
+        <h1>CampusDesk</h1>
+        <p>Student records &amp; administration</p>
+      </div>
+    </div>
+    <div class="status"><span>●</span> STUDENT PORTAL</div>
+  </div>
+</header>
+
+<main>
+
+<section id="home">
+  <div class="welcome">
+    <div class="eyebrow">Student management / Overview</div>
+    <h2>Manage your students</h2>
+    <p>Everything organized, all in one place. What would you like to do?</p>
+  </div>
+
+  <div class="cards">
+    <article class="card">
+      <div class="card-top">
+        <div class="card-icon icon-create">＋</div>
+        <div class="card-number">01 / CREATE</div>
+      </div>
+      <h3>Add a student</h3>
+      <p>Create a new student record with an ID, name, email address and course.</p>
+      <button class="card-button" type="button" data-page="create">
+        Create student <span class="arrow">→</span>
+      </button>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="card-icon icon-read">⌕</div>
+        <div class="card-number">02 / EXPLORE</div>
+      </div>
+      <h3>Find a record</h3>
+      <p>Search by student ID and view the saved details in seconds.</p>
+      <button class="card-button" type="button" data-page="read">
+        Search records <span class="arrow">→</span>
+      </button>
+    </article>
+
+    <article class="card">
+      <div class="card-top">
+        <div class="card-icon icon-manage">✎</div>
+        <div class="card-number">03 / MANAGE</div>
+      </div>
+      <h3>Manage records</h3>
+      <p>Update student information or delete a record when necessary.</p>
+      <button class="card-button" type="button" data-page="manage">
+        Manage students <span class="arrow">→</span>
+      </button>
+    </article>
+  </div>
+</section>
+
+<section class="panel" id="create">
+  <div class="panel-heading">
+    <div class="eyebrow">01 / Create record</div>
+    <h2>Add a student</h2>
+    <p>Fill in the student information below.</p>
+  </div>
+  <div class="message" id="createMessage" role="status"></div>
+  <form id="createForm">
+    <div class="field">
+      <label for="createId">Student ID *</label>
+      <input id="createId" type="number" min="1" step="1" required placeholder="Enter student ID">
+    </div>
+    <div class="field">
+      <label for="createName">Full name *</label>
+      <input id="createName" required maxlength="100" placeholder="Enter student name">
+    </div>
+    <div class="field">
+      <label for="createEmail">Email address</label>
+      <input id="createEmail" type="email" maxlength="150" placeholder="student@example.com">
+    </div>
+    <div class="field">
+      <label for="createCourse">Course *</label>
+      <input id="createCourse" required maxlength="100" placeholder="Enter course">
+    </div>
+    <div class="actions">
+      <button class="primary" type="submit">Save student</button>
+      <button class="secondary" type="button" data-home>← Back to dashboard</button>
+    </div>
+  </form>
+</section>
+
+<section class="panel" id="read">
+  <div class="panel-heading">
+    <div class="eyebrow">02 / Find record</div>
+    <h2>Search students</h2>
+    <p>Enter the ID of the student you want to find.</p>
+  </div>
+  <div class="message" id="readMessage" role="status"></div>
+  <form id="readForm">
+    <div class="field">
+      <label for="readId">Student ID *</label>
+      <input id="readId" type="number" min="1" step="1" required placeholder="Enter student ID">
+    </div>
+    <div class="actions">
+      <button class="primary" type="submit">Find student</button>
+      <button class="secondary" type="button" data-home>← Back to dashboard</button>
+    </div>
+  </form>
+  <div class="result" id="readResult"></div>
+</section>
+
+<section class="panel" id="manage">
+  <div class="panel-heading">
+    <div class="eyebrow">03 / Manage record</div>
+    <h2>Update or delete</h2>
+    <p>Load a student by ID before changing the record.</p>
+  </div>
+  <div class="message" id="manageMessage" role="status"></div>
+  <form id="manageSearchForm">
+    <div class="field">
+      <label for="manageId">Student ID *</label>
+      <input id="manageId" type="number" min="1" step="1" required placeholder="Enter student ID">
+    </div>
+    <div class="actions">
+      <button class="primary" type="submit">Load student</button>
+      <button class="secondary" type="button" data-home>← Back to dashboard</button>
+    </div>
+  </form>
+
+  <div id="editArea" hidden>
+    <hr style="border:0;border-top:1px solid #e0e7ef;margin:25px 0">
+    <form id="updateForm">
+      <div class="field">
+        <label for="editName">Full name *</label>
+        <input id="editName" required maxlength="100">
+      </div>
+      <div class="field">
+        <label for="editEmail">Email address</label>
+        <input id="editEmail" type="email" maxlength="150">
+      </div>
+      <div class="field">
+        <label for="editCourse">Course *</label>
+        <input id="editCourse" required maxlength="100">
+      </div>
+      <div class="actions">
+        <button class="primary" type="submit">Save changes</button>
+        <button class="danger" id="deleteButton" type="button">Delete student</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer>CampusDesk · Student records &amp; administration</footer>
+
+<script>
+"use strict";
+
+const home = document.getElementById("home");
+const panels = document.querySelectorAll(".panel");
+let selectedStudentId = null;
+
+function showPage(page) {
+  home.hidden = page !== "home";
+  panels.forEach(panel => panel.classList.toggle("active", panel.id === page));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+document.querySelectorAll("[data-home]").forEach(button => {
+  button.addEventListener("click", () => showPage("home"));
+});
+
+function message(id, text, type) {
+  const element = document.getElementById(id);
+  element.textContent = text;
+  element.className = "message show " + type;
+}
+
+function clearMessage(id) {
+  const element = document.getElementById(id);
+  element.textContent = "";
+  element.className = "message";
+}
+
+async function api(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
+
+  const text = await response.text();
+  let data = null;
+
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error("Server returned an unexpected response. Check server.js.");
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error((data && (data.error || data.message)) || "Request failed: " + response.status);
+  }
+
+  return data;
+}
+
+function unwrap(data) {
+  if (!data) return null;
+  if (data.student) return data.student;
+  if (Array.isArray(data)) return data[0] || null;
+  if (Array.isArray(data.students)) return data.students[0] || null;
+  return data.id !== undefined ? data : null;
+}
+
+function renderStudent(student, target) {
+  const box = document.getElementById(target);
+  box.replaceChildren();
+
+  if (!student) {
+    box.classList.remove("show");
+    return;
+  }
+
+  const heading = document.createElement("h3");
+  heading.textContent = "Student details";
+  box.appendChild(heading);
+
+  [["Student ID", student.id], ["Name", student.name],
+   ["Email", student.email || "Not provided"], ["Course", student.course]]
+    .forEach(([label, value]) => {
+      const p = document.createElement("p");
+      const strong = document.createElement("strong");
+      strong.textContent = label + ": ";
+      p.appendChild(strong);
+      p.appendChild(document.createTextNode(String(value ?? "")));
+      box.appendChild(p);
+    });
+
+  box.classList.add("show");
+}
+
+// CREATE: manual student ID
+document.getElementById("createForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  clearMessage("createMessage");
+
+  const form = event.currentTarget;
+  const student = {
+    id: Number(document.getElementById("createId").value),
+    name: document.getElementById("createName").value.trim(),
+    email: document.getElementById("createEmail").value.trim(),
+    course: document.getElementById("createCourse").value.trim()
+  };
+
+  if (!Number.isSafeInteger(student.id) || student.id < 1 || !student.name || !student.course) {
+    message("createMessage", "Enter a valid ID, name and course.", "error");
+    return;
+  }
+
+  try {
+    const result = await api("/students", {
+      method: "POST",
+      body: JSON.stringify(student)
+    });
+    form.reset();
+    message("createMessage", result.message || "Student created successfully!", "success");
+  } catch (error) {
+    message("createMessage", error.message, "error");
+  }
+});
+
+// READ
+document.getElementById("readForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  clearMessage("readMessage");
+  document.getElementById("readResult").classList.remove("show");
+
+  const id = document.getElementById("readId").value.trim();
+
+  try {
+    const student = unwrap(await api("/students/" + encodeURIComponent(id)));
+    if (!student) throw new Error("Student not found.");
+    renderStudent(student, "readResult");
+    message("readMessage", "Student found successfully.", "success");
+  } catch (error) {
+    message("readMessage", error.message, "error");
+  }
+});
+
+// LOAD FOR UPDATE / DELETE
+document.getElementById("manageSearchForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  clearMessage("manageMessage");
+  document.getElementById("editArea").hidden = true;
+  selectedStudentId = null;
+
+  const id = document.getElementById("manageId").value.trim();
+
+  try {
+    const student = unwrap(await api("/students/" + encodeURIComponent(id)));
+    if (!student) throw new Error("Student not found.");
+
+    selectedStudentId = student.id;
+    document.getElementById("editName").value = student.name || "";
+    document.getElementById("editEmail").value = student.email || "";
+    document.getElementById("editCourse").value = student.course || "";
+    document.getElementById("editArea").hidden = false;
+
+    message("manageMessage", "Student loaded successfully.", "success");
+  } catch (error) {
+    message("manageMessage", error.message, "error");
+  }
+});
+
+// UPDATE
+document.getElementById("updateForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (selectedStudentId === null) {
+    message("manageMessage", "Load a student first.", "error");
+    return;
+  }
+
+  const student = {
+    name: document.getElementById("editName").value.trim(),
+    email: document.getElementById("editEmail").value.trim(),
+    course: document.getElementById("editCourse").value.trim()
+  };
+
+  try {
+    const result = await api("/students/" + encodeURIComponent(selectedStudentId), {
+      method: "PUT",
+      body: JSON.stringify(student)
+    });
+    message("manageMessage", result.message || "Student updated successfully.", "success");
+  } catch (error) {
+    message("manageMessage", error.message, "error");
+  }
+});
+
+// DELETE
+document.getElementById("deleteButton").addEventListener("click", async event => {
+  if (selectedStudentId === null) {
+    message("manageMessage", "Load a student first.", "error");
+    return;
+  }
+
+  if (!window.confirm("Permanently delete this student record?")) return;
+
+  const button = event.currentTarget;
+  button.disabled = true;
+
+  try {
+    const result = await api("/students/" + encodeURIComponent(selectedStudentId), {
+      method: "DELETE"
+    });
+
+    document.getElementById("editArea").hidden = true;
+    document.getElementById("manageSearchForm").reset();
+    selectedStudentId = null;
+
+    message("manageMessage", result.message || "Student deleted successfully.", "success");
+  } catch (error) {
+    message("manageMessage", error.message, "error");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+showPage("home");
+</script>
+</body>
+</html>
